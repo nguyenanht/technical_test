@@ -51,3 +51,76 @@ on choisit le csv
 form-data
 fileupload : test.csv
 
+
+Projet de mise en production d'un algorithme pour la prédiction d'embauche pour le poste de chercheur d'or chez Orfée.
+
+
+# Installation en local sans docker
+create a virtual env :
+    
+    python3 -m venv embauche_venv
+
+Activate the virtual env
+on windows :
+
+
+    embauche_venv\Scripts\activate.bat
+
+on linux or macos :
+
+
+    source embauche_venv/bin/activate
+    
+Install dependencies :
+
+    pip install -r requirements.txt
+    
+Pour sauvegarder les dépendances :
+
+    pip freeze > requirements.txt
+    
+    
+
+# Installation avec Docker :
+
+    docker build -t nguyenanht/fairmoney:latest .
+    docker run -p 5000:5000 -it nguyenanht/fairmoney:latest
+    
+    
+    
+Elastic beanstalk deploy:
+
+init beanstalk :
+
+    eb init -p docker application-name 
+    
+test locally :
+    
+    eb local run --port 5000
+    
+    
+    eb create application-name
+    
+    
+https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/single-container-docker.html
+https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/single-container-docker.html
+
+    
+# Pour lancer le programme en local :
+
+### Avec Docker :
+
+    docker run -it nguyenanht/hiring:latest
+  
+### Avec une virtuel environnement python :
+
+Pour réentrainer un modèle :
+
+
+    python3 src/training_pipeline 
+
+Pour lancer le flask :
+
+
+    python3 application.py
+    

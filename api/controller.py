@@ -12,29 +12,29 @@ from api import __version__ as api_version
 
 _logger = get_logger(logger_name=__name__)
 
-prediction_app = Blueprint('prediction_app', __name__)
+application = Blueprint('prediction_app', __name__)
 
 
-@prediction_app.route('/', methods=['GET'])
+@application.route('/', methods=['GET'])
 def home():
     return "<h1 style='color:blue'>Hello There :) !</h1>"
 
 
-@prediction_app.route('/health', methods=['GET'])
+@application.route('/health', methods=['GET'])
 def health():
     if request.method == 'GET':
         _logger.info('health status OK')
         return 'ok'
 
 
-@prediction_app.route('/version', methods=['GET'])
+@application.route('/version', methods=['GET'])
 def version():
     if request.method == 'GET':
         return jsonify({'model_version': _version,
                         'api_version': api_version})
 
 
-@prediction_app.route('/predict/', methods=['POST'])
+@application.route('/predict/', methods=['POST'])
 def predict():
     """Output of default model based on last timestamp"""
     if request.method == 'POST':
@@ -59,14 +59,14 @@ def predict():
                         'errors': errors})
 
 
-@prediction_app.route('/models/', methods=['GET'])
+@application.route('/models/', methods=['GET'])
 def get_models():
     models_list = get_models_list()
 
     return jsonify({'models': models_list})
 
 
-@prediction_app.route('/output/<model_id>', methods=['POST'])
+@application.route('/output/<model_id>', methods=['POST'])
 def output_specific_model(model_id):
     model_id = model_id
     # lightgbm_output_v0.1-1588759220.335498
@@ -92,7 +92,7 @@ def output_specific_model(model_id):
     })
 
 
-@prediction_app.route('/outputs/<model_id>', methods=['POST'])
+@application.route('/outputs/<model_id>', methods=['POST'])
 def batch_output_specific_model(model_id):
     """Output of a specific model with test.csv data
 
@@ -125,7 +125,7 @@ def batch_output_specific_model(model_id):
     })
 
 
-@prediction_app.route('/outputs_upload/<model_id>', methods=['POST'])
+@application.route('/outputs_upload/<model_id>', methods=['POST'])
 def outputs_upload(model_id):
     """Upload a csv file and return prediction output
     """
