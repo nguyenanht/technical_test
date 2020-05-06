@@ -1,6 +1,7 @@
 import pandas as pd
 from flask import Blueprint, request, jsonify
 from src.extraction.data_management import Data
+from src.metrics.cust_metric import get_auc_score
 from src.predict import make_prediction, get_models_list
 from src import __version__ as _version
 
@@ -104,6 +105,7 @@ def batch_output_specific_model(model_id):
 
     """
     model_id = model_id
+    auc_score = ''
     # lightgbm_output_v0.1-1588759220.335498
 
     if request.method == 'POST':
@@ -113,22 +115,34 @@ def batch_output_specific_model(model_id):
         result = make_prediction(input_data=data, id_model=model_id)
         predictions = result.get('predictions').tolist()
 
+        if 'default' in data.columns:
+            auc_score = get_auc_score(data['default'], result.get('predictions'))
+
     return jsonify({
         'result': predictions,
-        'model': model_id
+        'model': model_id,
+        'auc_score': auc_score
     })
 
 
 @prediction_app.route('/outputs_upload/<model_id>', methods=['POST'])
 def outputs_upload(model_id):
+    """Upload a csv file and return prediction output
+    """
     if request.method == 'POST':
+        auc_score = ''
         # Create variable for uploaded file
         df = pd.read_csv(request.files.get('fileupload'))
 
         result = make_prediction(input_data=df, id_model=model_id)
         predictions = result.get('predictions').tolist()
 
+        if 'default' in df.columns:
+            auc_score = get_auc_score(df['default'], result.get('predictions'))
+
     return jsonify({
         'result': predictions,
-        'model': model_id
+        'model': model_id,
+        'auc_score': auc_score
     })
+
