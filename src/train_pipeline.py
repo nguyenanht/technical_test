@@ -13,11 +13,11 @@ from src.tuning.bayesian_optimization import BayesOpt
 from src.utils.pipeline import Pipeline
 from src import __version__ as _version, config
 
-# from src.predict import make_prediction
-
 _logger = logging.getLogger(__name__)
 
-debug = False
+debug = True
+if debug:
+    from src.predict import make_prediction
 
 
 def run_training() -> None:
@@ -87,13 +87,12 @@ def run_training() -> None:
     # Create Model
     # =================================================
     if debug:
-        # make_prediction(input_data=data[config.FEATURES])
-        pass
+        make_prediction(input_data=data[config.FEATURES])
     else:
 
         lgb = LgbClassifier(tag='training')  # set tag training to indicate to load dataset
 
-        # Find best params for XBoost model with Bayes Optimization
+        # Find best params for LightGbm model with Bayesian Optimization
         # ================================================
         optim = BayesOpt(lgb, lgb.bayes_evaluate, lgb.params)
         optim.tune(init_points=5, n_iter=20)

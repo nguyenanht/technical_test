@@ -1,10 +1,13 @@
+import pandas as pd
 from flask import Blueprint, request, jsonify
+from src.extraction.data_management import Data
 from src.predict import make_prediction, get_models_list
 from src import __version__ as _version
 
 from api.config import get_logger
 from api.validation import validate_inputs
 from api import __version__ as api_version
+
 
 _logger = get_logger(logger_name=__name__)
 
@@ -30,8 +33,9 @@ def version():
                         'api_version': api_version})
 
 
-@prediction_app.route('/v1/predict/', methods=['POST'])
+@prediction_app.route('/predict/', methods=['POST'])
 def predict():
+    """Output of default model based on last timestamp"""
     if request.method == 'POST':
         # Step 1: Extract POST data from request body as JSON
         json_data = request.get_json()
@@ -68,18 +72,61 @@ def output_specific_model(model_id):
 
     if request.method == 'POST':
         # Step 1: Extract POST data from request body as JSON
-        json_data = request.get_json()
+        data = request.get_json()
 
-        if json_data is None:
-            pass
-        else:
-            # Step 2: Validate the input using marshmallow schema
+        # Step 2: Validate the input using marshmallow schema
+        data, errors = validate_inputs(input_data=data)
 
-            # Step 3: Model prediction
-            result = make_prediction(input_data=json_data, id_model=model_id)
+        # Step 3: Model prediction
+        result = make_prediction(input_data=data, id_model=model_id)
 
         predictions = result.get('predictions').tolist()
         version = result.get('version')
+
+    return jsonify({
+        'result': predictions,
+        'model': model_id,
+        'version': version,
+        'errors': errors
+    })
+
+
+@prediction_app.route('/outputs/<model_id>', methods=['POST'])
+def batch_output_specific_model(model_id):
+    """Output of a specific model with test.csv data
+
+    parameters
+    ---------------
+        model_id: str
+
+    returns
+    ---------------
+
+    """
+    model_id = model_id
+    # lightgbm_output_v0.1-1588759220.335498
+
+    if request.method == 'POST':
+        data_mngmnt = Data()
+        data_mngmnt.from_csv("test.csv", sep=',')
+        data = data_mngmnt.df
+        result = make_prediction(input_data=data, id_model=model_id)
+        predictions = result.get('predictions').tolist()
+
+    return jsonify({
+        'result': predictions,
+        'model': model_id
+    })
+
+
+@prediction_app.route('/outputs_upload/<model_id>', methods=['POST'])
+def outputs_upload(model_id):
+    if request.method == 'POST':
+        # Create variable for uploaded file
+        df = pd.read_csv(request.files.get('fileupload'))
+
+        result = make_prediction(input_data=df, id_model=model_id)
+        predictions = result.get('predictions').tolist()
 
     return jsonify({
         'result': predictions,

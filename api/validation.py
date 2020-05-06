@@ -18,7 +18,7 @@ class FairMoneyDataRequestSchema(Schema):
     employment_length = fields.Str()
     installment_rate = fields.Float()
     personal_status = fields.Str()
-    other_debtors = fields.Float()
+    other_debtors = fields.Str()
     residence_history = fields.Float()
     property = fields.Str()
     age = fields.Float()

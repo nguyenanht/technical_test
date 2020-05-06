@@ -31,12 +31,17 @@ def make_prediction(*, input_data: t.Union[pd.DataFrame, dict], id_model: str = 
     else:
         data = pd.DataFrame(input_data)
 
-    if id_model is not None:
-        _model = LgbClassifier()
-        _model.load_model(filename=id_model)
-
+    # Transform data
     transformed_data = _pipe.transform(data[config.FEATURES])
-    output = _model.predict(transformed_data)
+
+    # If we use specifif model, else use default model based on last timestamp
+    if id_model is not None:
+        specific_model = LgbClassifier()
+        specific_model.load_model(filename=id_model)
+        output = specific_model.predict(transformed_data)
+    else:
+        output = _model.predict(transformed_data)
+
     results = {"predictions": output, "version": _version}
 
     _logger.info(
