@@ -15,7 +15,7 @@ from src import __version__ as _version, config
 
 _logger = logging.getLogger(__name__)
 
-debug = True
+debug = False
 if debug:
     from src.predict import make_prediction
 

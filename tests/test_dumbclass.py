@@ -3,4 +3,4 @@ def hello(name):
 
 
 def test_useless_assert():
-    assert hello('Celine') == 'Hello Celine'
+    assert hello('John') == 'Hello John'
