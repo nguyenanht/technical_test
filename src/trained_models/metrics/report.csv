@@ -1,0 +1,2 @@
+model_version,accuracy_score,auc_score
+lightgbm_output_v0.1-1588759220.335498,0.71,0.754
