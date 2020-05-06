@@ -1,0 +1,22 @@
+language: generic
+sudo: required # We give admin right
+services: # We indicate to travis to install a copy of docker in our running container
+  - docker
+
+before_install: # Commands to be executed before our test are run
+  - docker build -t nguyenanht/simpleflaskapp -f Dockerfile.test .
+
+script: # Every commands needed to run the test
+  - docker run -e CI=true nguyenanht/simpleflaskapp python3 -m pytest # CI=true
+
+deploy:
+  provider: elasticbeanstalk
+  region: "eu-west-3"
+  app: "fairmoney" # Name application on Elastic beanstalk
+  env: "Fairmoney-env" # Name environment on Elastic beanstalk
+  bucket_name: "elasticbeanstalk-eu-west-3-120100701306"
+  bucket_path: "fairmoney"
+  on:
+    branch: master
+  access_key_id: $AWS_ACCESS_KEY
+  secret_access_key: $AWS_SECRET_KEY

@@ -124,3 +124,10 @@ Pour lancer le flask :
 
     python3 application.py
     
+    
+
+update travis
+git add .
+git commit -m "travis.ci"
+git push
+    
