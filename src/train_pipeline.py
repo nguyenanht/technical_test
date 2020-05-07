@@ -3,6 +3,9 @@ import logging
 from sklearn.model_selection import train_test_split
 import pandas as pd
 
+import sys
+sys.path.append('../')
+
 # Custom import
 from src.models.lightgbm_classifier import LgbClassifier
 from src.extraction.data_management import Data
@@ -16,8 +19,6 @@ from src import __version__ as _version, config
 _logger = logging.getLogger(__name__)
 
 debug = False
-if debug:
-    from src.predict import make_prediction
 
 
 def run_training() -> None:
@@ -49,7 +50,7 @@ def run_training() -> None:
     ]
     preprocessing_pipeline = Pipeline(transformers=transformers_features)
 
-    # TARGET
+    # TARGET, We remap the target between 0 and 1
     transformers_target = [
         preprocessors.RemapTarget(target=config.TARGET, mapping=config.MAPPING_TARGET)
     ]
@@ -75,40 +76,39 @@ def run_training() -> None:
     data_mngmnt.save_dataset(train, config.TRAINING_DATA_FILE, sep=',')
     data_mngmnt.save_dataset(test, config.TESTING_DATA_FILE, sep=',')
 
-    if not debug:
-        del data_mngmnt  # clear variable in memory
-        del data
+    del data_mngmnt  # clear variable in memory
+    del data
 
     del train
     del test
     del preprocessing_pipeline
     del preprocessing_target_pipeline
 
+    # if debug:
+    #     make_prediction(input_data=data[config.FEATURES])
+    # else:
+
     # Create Model
     # =================================================
-    if debug:
-        make_prediction(input_data=data[config.FEATURES])
-    else:
+    lgb = LgbClassifier(tag='training')  # set tag training to indicate to load dataset
 
-        lgb = LgbClassifier(tag='training')  # set tag training to indicate to load dataset
+    # Find best params for LightGbm model with Bayesian Optimization
+    # ================================================
+    optim = BayesOpt(lgb, lgb.bayes_evaluate, lgb.params)
+    optim.tune(init_points=5, n_iter=20)
+    lgb.set_best_params(optim.best_params)
 
-        # Find best params for LightGbm model with Bayesian Optimization
-        # ================================================
-        optim = BayesOpt(lgb, lgb.bayes_evaluate, lgb.params)
-        optim.tune(init_points=5, n_iter=20)
-        lgb.set_best_params(optim.best_params)
+    # Check for the robustness
+    lgb.evaluate()
 
-        # Check for the robustness
-        lgb.evaluate()
+    # Finally fit with the best params
+    lgb.fit()
 
-        # Finally fit with the best params
-        lgb.fit()
+    # Save model for further prediction in Flask
+    lgb.save_model(config.MODEL_NAME)
 
-        # Save model for further prediction in Flask
-        lgb.save_model(config.MODEL_NAME)
-
-        # Save metrics
-        lgb.save_metrics(config.MODEL_NAME)
+    # Save metrics
+    lgb.save_metrics(config.MODEL_NAME)
 
 
 if __name__ == "__main__":

@@ -120,6 +120,7 @@ env.bak/
 venv.bak/
 embauche_venv/
 flask
+test_venv
 
 # Spyder project settings
 .spyderproject
