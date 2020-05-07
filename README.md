@@ -89,7 +89,7 @@ git push
  
  
 #### DEMO With docker in local: 
-
+If you want to test the API in production replace http://localhost by https://ngjohn.site
 * Get list id_model : method get in postman => ```http://localhost/models```
 * Get output prediction of a specific model : method Post => ```localhost/output/id_model```:
    Example of json raw request    
