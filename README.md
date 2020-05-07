@@ -79,7 +79,7 @@ run :
       ![activation of the project to allow CI/CD](img/activation_project_travis.png)
     * Click on Settings and add AWS_ACCESS_KEY and AWS_SECRET_KEY that you can find in the csv file saved when you created IAM Users
 
-* Push some code to branch master and the magic append !
+* Push some code to branch master and the magic happens !
 ```
 git add .
 git commit -m "travis.ci"
@@ -170,11 +170,7 @@ Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c6
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
 
-## Acknowledgments
 
-* Hat tip to anyone whose code was used
-* Inspiration
-* etc
 
 
 
