@@ -157,10 +157,6 @@ If you want to test the API in production replace http://localhost by https://ng
 * [Travis-ci](https://travis-ci.com/) - Used for the continuous intregration and delivery and testing
 * [Elastic Beanstalk](https://aws.amazon.com/fr/elasticbeanstalk/) - Used for the management of applications
 
-## Contributing
-
-Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
-
 
 ## Authors
 
